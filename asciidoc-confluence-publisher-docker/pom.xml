@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
         <artifactId>asciidoc-confluence-publisher</artifactId>
-        <version>0.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <name>Asciidoc Confluence Publisher Docker Image</name>
@@ -62,9 +62,9 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-            <plugin>
+  <!--          <plugin>
                 <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
+                <artifactId>docker-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>default</id>
@@ -74,9 +74,46 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repository>confluencepublisher/confluence-publisher</repository>
-                    <tag>${project.version}</tag>
-                    <googleContainerRegistryEnabled>false</googleContainerRegistryEnabled>
+                    <registryUrl>https://nexus2.severmed.com/</registryUrl>
+                    &lt;!&ndash;<dockerHost>https://ci.severmed.com</dockerHost>&ndash;&gt;
+                    <dockerDirectory>${project.basedir}</dockerDirectory>
+                    <imageName>nexus2.severgroup.com/confluence-publisher</imageName>
+                    &lt;!&ndash;<repository>confluencepublisher/confluence-publisher</repository>&ndash;&gt;
+                    <imageTags>${project.version}</imageTags>
+                    &lt;!&ndash;<googleContainerRegistryEnabled>false</googleContainerRegistryEnabled>&ndash;&gt;
+                </configuration>
+            </plugin>-->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Build docker container</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>Push docker container</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dockerHost>http://ci.severmed.com:2375</dockerHost>
+                    <registry>https://nexus2.severmed.com/</registry>
+                    <images>
+                        <image>
+                            <name>nexus2.severmed.com/confluence-publisher</name>
+                            <build>
+                                <dockerFileDir>${project.basedir}</dockerFileDir>
+                                <tags>${project.version}</tags>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>

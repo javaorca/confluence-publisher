@@ -67,12 +67,14 @@ public class ConfluencePublisher {
         assertMandatoryParameter(isNotBlank(this.metadata.getSpaceKey()), "spaceKey");
         assertMandatoryParameter(isNotBlank(this.metadata.getAncestorId()), "ancestorId");
 
-        startPublishingUnderAncestorId(this.metadata.getPages(), this.metadata.getSpaceKey(), this.metadata.getAncestorId());
+        startPublishingUnderAncestorId(this.metadata.getPages(), this.metadata.getSpaceKey(), this.metadata.getAncestorId(), this.metadata.getDeleteSiblings());
         this.confluencePublisherListener.publishCompleted();
     }
 
-    private void startPublishingUnderAncestorId(List<ConfluencePageMetadata> pages, String spaceKey, String ancestorId) {
-        deleteConfluencePagesNotPresentUnderAncestor(pages, ancestorId);
+    private void startPublishingUnderAncestorId(List<ConfluencePageMetadata> pages, String spaceKey, String ancestorId, boolean deleteSiblings) {
+        if (deleteSiblings) {
+            deleteConfluencePagesNotPresentUnderAncestor(pages, ancestorId);
+        }
 
         pages.forEach(page -> {
             String content = fileContent(page.getContentFilePath(), UTF_8);
@@ -80,7 +82,7 @@ public class ConfluencePublisher {
 
             deleteConfluenceAttachmentsNotPresentUnderPage(contentId, page.getAttachments());
             addAttachments(contentId, page.getAttachments());
-            startPublishingUnderAncestorId(page.getChildren(), spaceKey, contentId);
+            startPublishingUnderAncestorId(page.getChildren(), spaceKey, contentId, deleteSiblings);
         });
     }
 

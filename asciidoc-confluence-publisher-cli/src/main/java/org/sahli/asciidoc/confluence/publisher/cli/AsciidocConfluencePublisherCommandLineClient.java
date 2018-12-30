@@ -50,6 +50,7 @@ public class AsciidocConfluencePublisherCommandLineClient {
         String password = mandatoryArgument("password", args);
         String spaceKey = mandatoryArgument("spaceKey", args);
         String ancestorId = mandatoryArgument("ancestorId", args);
+        boolean deleteSiblings = Boolean.valueOf(optionalArgument("deleteSiblings", args).orElse("false"));
 
         Path documentationRootFolder = Paths.get(mandatoryArgument("asciidocRootFolder", args));
         Path buildFolder = createTempDirectory("confluence-publisher");
@@ -62,7 +63,7 @@ public class AsciidocConfluencePublisherCommandLineClient {
             AsciidocPagesStructureProvider asciidocPagesStructureProvider = new FolderBasedAsciidocPagesStructureProvider(documentationRootFolder, sourceEncoding);
             PageTitlePostProcessor pageTitlePostProcessor = new PrefixAndSuffixPageTitlePostProcessor(prefix, suffix);
 
-            AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter(spaceKey, ancestorId);
+            AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter(spaceKey, ancestorId, deleteSiblings);
             ConfluencePublisherMetadata confluencePublisherMetadata = asciidocConfluenceConverter.convert(asciidocPagesStructureProvider, pageTitlePostProcessor, buildFolder);
 
             ConfluenceRestClient confluenceClient = new ConfluenceRestClient(rootConfluenceUrl, username, password);

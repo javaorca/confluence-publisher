@@ -56,10 +56,12 @@ public final class AsciidocConfluenceConverter {
 
     private final String spaceKey;
     private final String ancestorId;
+    private final boolean deleteSiblings;
 
-    public AsciidocConfluenceConverter(String spaceKey, String ancestorId) {
+    public AsciidocConfluenceConverter(String spaceKey, String ancestorId, boolean deleteSiblings) {
         this.spaceKey = spaceKey;
         this.ancestorId = ancestorId;
+        this.deleteSiblings = deleteSiblings;
     }
 
     public ConfluencePublisherMetadata convert(AsciidocPagesStructureProvider asciidocPagesStructureProvider, Path buildFolder) {
@@ -84,6 +86,7 @@ public final class AsciidocConfluenceConverter {
             ConfluencePublisherMetadata confluencePublisherMetadata = new ConfluencePublisherMetadata();
             confluencePublisherMetadata.setSpaceKey(this.spaceKey);
             confluencePublisherMetadata.setAncestorId(this.ancestorId);
+            confluencePublisherMetadata.setDeleteSiblings(this.deleteSiblings);
             confluencePublisherMetadata.setPages(confluencePages);
 
             return confluencePublisherMetadata;

@@ -10,6 +10,7 @@ ENV SOURCE_ENCODING="" \
     ROOT_CONFLUENCE_URL=""  \
     SPACE_KEY=""  \
     ANCESTOR_ID=""  \
+    DELETE_SIBLINGS="" \
     USERNAME=""  \
     PASSWORD=""  \
     PAGE_TITLE_PREFIX=""  \
@@ -21,6 +22,7 @@ ENTRYPOINT ["sh", "-c", "java -jar /opt/asciidoc-confluence-publisher-docker.jar
     \"rootConfluenceUrl=$ROOT_CONFLUENCE_URL\" \
     \"spaceKey=$SPACE_KEY\" \
     \"ancestorId=$ANCESTOR_ID\" \
+    \"deleteSiblings=$DELETE_SIBLINGS\" \
     \"username=$USERNAME\" \
     \"password=$PASSWORD\" \
     \"pageTitlePrefix=$PAGE_TITLE_PREFIX\" \
