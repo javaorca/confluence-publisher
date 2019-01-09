@@ -96,7 +96,7 @@
                     </execution>
                     <execution>
                         <id>Push docker container</id>
-                        <phase>deploy</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>push</goal>
                         </goals>
