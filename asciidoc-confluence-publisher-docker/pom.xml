@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
         <artifactId>asciidoc-confluence-publisher</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <name>Asciidoc Confluence Publisher Docker Image</name>
@@ -75,7 +75,7 @@
                 </executions>
                 <configuration>
                     <registryUrl>https://nexus2.severmed.com/</registryUrl>
-                    &lt;!&ndash;<dockerHost>https://ci.severmed.com</dockerHost>&ndash;&gt;
+                    &lt;!&ndash;<dockerHost>https://nexus2.severmed.com</dockerHost>&ndash;&gt;
                     <dockerDirectory>${project.basedir}</dockerDirectory>
                     <imageName>nexus2.severgroup.com/confluence-publisher</imageName>
                     &lt;!&ndash;<repository>confluencepublisher/confluence-publisher</repository>&ndash;&gt;
@@ -104,7 +104,7 @@
                 </executions>
                 <configuration>
                     <dockerHost>http://ci.severmed.com:2375</dockerHost>
-                    <registry>https://nexus2.severmed.com/</registry>
+                    <registry>https://nexus2.severmed.com/v2/</registry>
                     <images>
                         <image>
                             <name>nexus2.severmed.com/confluence-publisher</name>

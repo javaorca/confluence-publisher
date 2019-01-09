@@ -173,6 +173,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
+                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[import java.util.List;]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));
@@ -191,6 +192,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
+                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
                 "<ac:parameter ac:name=\"language\">java</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[import java.util.List;]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
@@ -228,6 +230,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
+                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[<b>content with html</b>]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));
@@ -246,6 +249,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
+                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[[0-9][0-9]\\.[0-9][0-9]\\.[0-9]{4}$]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));
@@ -876,7 +880,7 @@ public class AsciidocConfluencePageTest {
         AsciidocConfluencePage asciidocConfluencePage = newAsciidocConfluencePage(asciidocPage, UTF_8, TEMPLATES_FOLDER, assetsTargetFolderFor(asciidocPage));
 
         // assert
-        String expectedContent = "<ac:image ac:height=\"175\" ac:width=\"57\"><ri:attachment ri:filename=\"embedded-diagram.png\"></ri:attachment></ac:image>";
+        String expectedContent = "<ac:image ac:height=\"225\" ac:width=\"274\"><ri:attachment ri:filename=\"embedded-diagram.png\"></ri:attachment></ac:image>";
         assertThat(asciidocConfluencePage.content(), containsString(expectedContent));
         assertThat(exists(assetsTargetFolderFor(asciidocPage).resolve("embedded-diagram.png")), is(true));
     }
@@ -891,7 +895,7 @@ public class AsciidocConfluencePageTest {
         AsciidocConfluencePage asciidocConfluencePage = newAsciidocConfluencePage(asciidocPage, UTF_8, TEMPLATES_FOLDER, assetsTargetFolderFor(asciidocPage));
 
         // assert
-        String expectedContent = "<ac:image ac:height=\"175\" ac:width=\"57\"><ri:attachment ri:filename=\"included-diagram.png\"></ri:attachment></ac:image>";
+        String expectedContent = "<ac:image ac:height=\"225\" ac:width=\"274\"><ri:attachment ri:filename=\"included-diagram.png\"></ri:attachment></ac:image>";
         assertThat(asciidocConfluencePage.content(), containsString(expectedContent));
     }
 

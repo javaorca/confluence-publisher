@@ -22,7 +22,7 @@
 
     <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
     <artifactId>asciidoc-confluence-publisher</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>pom</packaging>
 
     <name>Asciidoc Confluence Publisher</name>
