@@ -67,22 +67,22 @@ public class ConfluencePublisher {
         assertMandatoryParameter(isNotBlank(this.metadata.getSpaceKey()), "spaceKey");
         assertMandatoryParameter(isNotBlank(this.metadata.getAncestorId()), "ancestorId");
 
-        startPublishingUnderAncestorId(this.metadata.getPages(), this.metadata.getSpaceKey(), this.metadata.getAncestorId(), this.metadata.getDeleteSiblings());
+        startPublishingUnderAncestorId(this.metadata.getPages(), this.metadata.getSpaceKey(), this.metadata.getAncestorId(), this.metadata.getMessage(), this.metadata.getDeleteSiblings());
         this.confluencePublisherListener.publishCompleted();
     }
 
-    private void startPublishingUnderAncestorId(List<ConfluencePageMetadata> pages, String spaceKey, String ancestorId, boolean deleteSiblings) {
+    private void startPublishingUnderAncestorId(List<ConfluencePageMetadata> pages, String spaceKey, String ancestorId, String message, boolean deleteSiblings) {
         if (deleteSiblings) {
             deleteConfluencePagesNotPresentUnderAncestor(pages, ancestorId);
         }
 
         pages.forEach(page -> {
             String content = fileContent(page.getContentFilePath(), UTF_8);
-            String contentId = addOrUpdatePage(spaceKey, ancestorId, page, content);
+            String contentId = addOrUpdatePage(spaceKey, ancestorId, page, content, message);
 
             deleteConfluenceAttachmentsNotPresentUnderPage(contentId, page.getAttachments());
             addAttachments(contentId, page.getAttachments());
-            startPublishingUnderAncestorId(page.getChildren(), spaceKey, contentId, deleteSiblings);
+            startPublishingUnderAncestorId(page.getChildren(), spaceKey, contentId, message, deleteSiblings);
         });
     }
 
@@ -113,7 +113,7 @@ public class ConfluencePublisher {
     }
 
 
-    private String addOrUpdatePage(String spaceKey, String ancestorId, ConfluencePageMetadata page, String content) {
+    private String addOrUpdatePage(String spaceKey, String ancestorId, ConfluencePageMetadata page, String content, String message) {
         String contentId;
 
         try {
@@ -125,7 +125,7 @@ public class ConfluencePublisher {
             if (notSameContentHash(existingContentHash, newContentHash)) {
                 this.confluenceClient.deletePropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
                 int newPageVersion = existingPage.getVersion() + 1;
-                this.confluenceClient.updatePage(contentId, ancestorId, page.getTitle(), content, newPageVersion);
+                this.confluenceClient.updatePage(contentId, ancestorId, page.getTitle(), content, newPageVersion, message);
                 this.confluenceClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
                 this.confluencePublisherListener.pageUpdated(existingPage, new ConfluencePage(contentId, page.getTitle(), content, newPageVersion));
             }

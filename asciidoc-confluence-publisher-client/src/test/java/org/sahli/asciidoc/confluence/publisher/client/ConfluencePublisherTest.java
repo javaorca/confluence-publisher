@@ -189,7 +189,7 @@ public class ConfluencePublisherTest {
 
         // assert
         verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("test message"));
 
         verify(confluencePublisherListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new ConfluencePage("3456", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluencePublisherListenerMock, times(1)).publishCompleted();
@@ -213,7 +213,7 @@ public class ConfluencePublisherTest {
 
         // assert
         verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"));
-        verify(confluenceRestClientMock, never()).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2));
+        verify(confluenceRestClientMock, never()).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("test message"));
 
         verify(confluencePublisherListenerMock, times(1)).publishCompleted();
         verifyNoMoreInteractions(confluencePublisherListenerMock);

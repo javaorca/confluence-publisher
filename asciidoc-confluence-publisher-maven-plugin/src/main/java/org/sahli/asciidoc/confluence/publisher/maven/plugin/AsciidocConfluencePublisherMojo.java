@@ -61,6 +61,9 @@ public class AsciidocConfluencePublisherMojo extends AbstractMojo {
     private String ancestorId;
 
     @Parameter
+    private String message;
+
+    @Parameter
     private boolean deleteSiblings;
 
     @Parameter
@@ -83,7 +86,7 @@ public class AsciidocConfluencePublisherMojo extends AbstractMojo {
 
             AsciidocPagesStructureProvider asciidocPagesStructureProvider = new FolderBasedAsciidocPagesStructureProvider(this.asciidocRootFolder.toPath(), Charset.forName(this.sourceEncoding));
 
-            AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter(this.spaceKey, this.ancestorId, this.deleteSiblings);
+            AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter(this.spaceKey, this.ancestorId, this.message, this.deleteSiblings);
             ConfluencePublisherMetadata confluencePublisherMetadata = asciidocConfluenceConverter.convert(asciidocPagesStructureProvider, pageTitlePostProcessor, this.confluencePublisherBuildFolder.toPath());
 
             ConfluenceRestClient confluenceRestClient = new ConfluenceRestClient(this.rootConfluenceUrl, this.username, this.password);

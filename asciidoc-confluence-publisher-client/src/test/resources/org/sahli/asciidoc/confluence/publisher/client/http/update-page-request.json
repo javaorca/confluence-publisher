@@ -7,7 +7,8 @@
     }
   ],
   "version": {
-    "number": 2
+    "number": 2,
+    "message": "test message"
   },
   "body": {
     "storage": {

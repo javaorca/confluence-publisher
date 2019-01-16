@@ -56,11 +56,13 @@ public final class AsciidocConfluenceConverter {
 
     private final String spaceKey;
     private final String ancestorId;
+    private final String message;
     private final boolean deleteSiblings;
 
-    public AsciidocConfluenceConverter(String spaceKey, String ancestorId, boolean deleteSiblings) {
+    public AsciidocConfluenceConverter(String spaceKey, String ancestorId, String message, boolean deleteSiblings) {
         this.spaceKey = spaceKey;
         this.ancestorId = ancestorId;
+        this.message = message;
         this.deleteSiblings = deleteSiblings;
     }
 
@@ -86,6 +88,7 @@ public final class AsciidocConfluenceConverter {
             ConfluencePublisherMetadata confluencePublisherMetadata = new ConfluencePublisherMetadata();
             confluencePublisherMetadata.setSpaceKey(this.spaceKey);
             confluencePublisherMetadata.setAncestorId(this.ancestorId);
+            confluencePublisherMetadata.setMessage(this.message);
             confluencePublisherMetadata.setDeleteSiblings(this.deleteSiblings);
             confluencePublisherMetadata.setPages(confluencePages);
 

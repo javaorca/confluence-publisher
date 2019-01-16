@@ -195,7 +195,7 @@ the following configuration in your `pom.xml` in order to use the latest snapsho
     <plugin>
       <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
       <artifactId>asciidoc-confluence-publisher-maven-plugin</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
       <!-- ... -->
     </plugin>
   </plugins>

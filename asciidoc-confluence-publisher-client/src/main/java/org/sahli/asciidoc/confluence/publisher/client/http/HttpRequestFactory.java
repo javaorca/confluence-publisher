@@ -19,6 +19,7 @@ package org.sahli.asciidoc.confluence.publisher.client.http;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -84,7 +85,7 @@ class HttpRequestFactory {
         return addPageHttpPost(this.confluenceRestApiEndpoint, pagePayload);
     }
 
-    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, int newVersion) {
+    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, int newVersion, String message) {
         assertMandatoryParameter(isNotBlank(contentId), "contentId");
         assertMandatoryParameter(isNotBlank(ancestorId), "ancestorId");
         assertMandatoryParameter(isNotBlank(title), "title");
@@ -93,7 +94,7 @@ class HttpRequestFactory {
                 .ancestorId(ancestorId)
                 .title(title)
                 .content(content)
-                .version(newVersion)
+                .version(newVersion, message)
                 .build();
 
         HttpPut updatePageRequest = new HttpPut(this.confluenceRestApiEndpoint + "/content/" + contentId);
@@ -325,6 +326,7 @@ class HttpRequestFactory {
         private String spaceKey;
         private String ancestorId;
         private Integer version;
+        private String message;
 
         public PagePayloadBuilder title(String title) {
             this.title = title;
@@ -350,8 +352,9 @@ class HttpRequestFactory {
             return this;
         }
 
-        public PagePayloadBuilder version(Integer version) {
+        public PagePayloadBuilder version(Integer version, String message) {
             this.version = version;
+            this.message = message;
 
             return this;
         }
@@ -382,6 +385,7 @@ class HttpRequestFactory {
             if (this.version != null) {
                 Version versionContainer = new Version();
                 versionContainer.setNumber(this.version);
+                versionContainer.setMessage(StringUtils.defaultIfBlank(message, StringUtils.EMPTY));
                 pagePayload.setVersion(versionContainer);
             }
 

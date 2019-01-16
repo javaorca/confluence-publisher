@@ -109,7 +109,7 @@ public class ConfluenceRestClientTest {
         ConfluenceRestClient confluenceRestClient = new ConfluenceRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null);
 
         // act
-        confluenceRestClient.updatePage("123", "1", "Hello", "Content", 2);
+        confluenceRestClient.updatePage("123", "1", "Hello", "Content", 2, "test message");
 
         // assert
         verify(httpClientMock, times(1)).execute(any(HttpPut.class));

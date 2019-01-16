@@ -28,6 +28,7 @@ public class ConfluencePublisherMetadata {
 
     private String spaceKey;
     private String ancestorId;
+    private String message;
     private boolean deleteSiblings;
     private List<ConfluencePageMetadata> pages = new ArrayList<>();
 
@@ -56,6 +57,15 @@ public class ConfluencePublisherMetadata {
     @RuntimeUse
     public void setPages(List<ConfluencePageMetadata> pages) {
         this.pages = pages;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    @RuntimeUse
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public boolean getDeleteSiblings() {

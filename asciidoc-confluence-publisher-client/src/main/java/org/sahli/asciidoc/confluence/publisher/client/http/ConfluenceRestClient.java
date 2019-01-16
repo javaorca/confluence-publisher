@@ -87,8 +87,8 @@ public class ConfluenceRestClient implements ConfluenceClient {
     }
 
     @Override
-    public void updatePage(String contentId, String ancestorId, String title, String content, int newVersion) {
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, newVersion);
+    public void updatePage(String contentId, String ancestorId, String title, String content, int newVersion, String message) {
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, newVersion, message);
         sendRequestAndFailIfNot20x(updatePageRequest);
     }
 

@@ -51,7 +51,7 @@ public class AsciidocConfluenceConverterTest {
         AsciidocPagesStructureProvider asciidocPagesStructureProvider = new FolderBasedAsciidocPagesStructureProvider(documentationRootFolder, UTF_8);
 
         // act
-        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", true);
+        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", "test message", true);
         ConfluencePublisherMetadata confluencePublisherMetadata = asciidocConfluenceConverter.convert(asciidocPagesStructureProvider, buildFolder);
 
         // assert
@@ -91,7 +91,7 @@ public class AsciidocConfluenceConverterTest {
         PageTitlePostProcessor pageTitlePostProcessor = new PrefixAndSuffixPageTitlePostProcessor("(Doc) ", " (1.0)");
 
         // act
-        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", true);
+        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", "test message", true);
         ConfluencePublisherMetadata confluencePublisherMetadata = asciidocConfluenceConverter.convert(asciidocPagesStructureProvider, pageTitlePostProcessor, buildFolder);
 
         // assert
@@ -110,7 +110,7 @@ public class AsciidocConfluenceConverterTest {
         Path buildFolder = this.temporaryFolder.newFolder().toPath().toAbsolutePath();
 
         AsciidocPagesStructureProvider asciidocPagesStructureProvider = new FolderBasedAsciidocPagesStructureProvider(documentationRootFolder, UTF_8);
-        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", true);
+        AsciidocConfluenceConverter asciidocConfluenceConverter = new AsciidocConfluenceConverter("~personalSpace", "1234", "test message", true);
 
         // act
         asciidocConfluenceConverter.convert(asciidocPagesStructureProvider, buildFolder);

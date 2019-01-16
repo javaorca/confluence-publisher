@@ -26,7 +26,7 @@ public interface ConfluenceClient {
 
     String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content);
 
-    void updatePage(String contentId, String ancestorId, String title, String content, int newVersion);
+    void updatePage(String contentId, String ancestorId, String title, String content, int newVersion, String message);
 
     void deletePage(String contentId);
 
