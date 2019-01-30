@@ -173,7 +173,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
-                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
+                "<ac:parameter ac:name=\"collapse\">false</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[import java.util.List;]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));
@@ -192,7 +192,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
-                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
+                "<ac:parameter ac:name=\"collapse\">false</ac:parameter>" +
                 "<ac:parameter ac:name=\"language\">java</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[import java.util.List;]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
@@ -230,7 +230,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
-                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
+                "<ac:parameter ac:name=\"collapse\">false</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[<b>content with html</b>]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));
@@ -249,7 +249,7 @@ public class AsciidocConfluencePageTest {
 
         // assert
         String expectedContent = "<ac:structured-macro ac:name=\"code\">" +
-                "<ac:parameter ac:name=\"collapse\">true</ac:parameter>" +
+                "<ac:parameter ac:name=\"collapse\">false</ac:parameter>" +
                 "<ac:plain-text-body><![CDATA[[0-9][0-9]\\.[0-9][0-9]\\.[0-9]{4}$]]></ac:plain-text-body>" +
                 "</ac:structured-macro>";
         assertThat(asciiDocConfluencePage.content(), is(expectedContent));

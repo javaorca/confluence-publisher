@@ -193,6 +193,11 @@ public class AsciidocConfluencePage {
     private static Function<String, String> replaceCrossReferenceTargets(Path pagePath, PageTitlePostProcessor pageTitlePostProcessor, Charset sourceEncoding) {
         return (content) -> replaceAll(content, PAGE_TITLE_PATTERN, (matchResult) -> {
             String htmlTarget = matchResult.group(1);
+            int lastIndex = htmlTarget.lastIndexOf('.');
+            if (lastIndex < 0) {
+                return "<ri:page ri:content-title=\"" + htmlTarget + "\"";
+            }
+
             Path referencedPagePath = pagePath.getParent().resolve(Paths.get(htmlTarget.substring(0, htmlTarget.lastIndexOf('.')) + ".adoc"));
 
             try {
