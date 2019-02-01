@@ -61,6 +61,7 @@ public class AsciidocConfluencePage {
 
     private static final Pattern CDATA_PATTERN = compile("<!\\[CDATA\\[.*?\\]\\]>", DOTALL);
     private static final Pattern ATTACHMENT_PATH_PATTERN = compile("<ri:attachment ri:filename=\"(.*?)\"");
+    private static final Pattern PAGE_LINK_PATTERN = compile("<ac:link><ri:page ri:content-title=\"#_.*?\"></ri:page><ac:plain-text-link-body><!\\[CDATA\\[(.*?)\\]\\]></ac:plain-text-link-body></ac:link>");
     private static final Pattern PAGE_TITLE_PATTERN = compile("<ri:page ri:content-title=\"(.*?)\"");
 
     private static final Asciidoctor ASCIIDOCTOR = create();
@@ -120,6 +121,7 @@ public class AsciidocConfluencePage {
     private static String convertedContent(String adocContent, Options options, Path pagePath, Map<String, String> attachmentCollector, PageTitlePostProcessor pageTitlePostProcessor, Charset sourceEncoding) {
         String content = ASCIIDOCTOR.convert(adocContent, options);
         String postProcessedContent = postProcessContent(content,
+                replacePageReferenceTargets(pagePath, pageTitlePostProcessor, sourceEncoding),
                 replaceCrossReferenceTargets(pagePath, pageTitlePostProcessor, sourceEncoding),
                 collectAndReplaceAttachmentFileNames(attachmentCollector),
                 unescapeCdataHtmlContent()
@@ -190,12 +192,19 @@ public class AsciidocConfluencePage {
                 .get();
     }
 
+    private static Function<String, String> replacePageReferenceTargets(Path pagePath, PageTitlePostProcessor pageTitlePostProcessor, Charset sourceEncoding) {
+        return (content) -> replaceAll(content, PAGE_LINK_PATTERN, (matchResult) -> {
+            String htmlTarget = matchResult.group(1);
+            return "<ac:link ac:anchor=\"" + htmlTarget + "\" />";
+        });
+    }
+
     private static Function<String, String> replaceCrossReferenceTargets(Path pagePath, PageTitlePostProcessor pageTitlePostProcessor, Charset sourceEncoding) {
         return (content) -> replaceAll(content, PAGE_TITLE_PATTERN, (matchResult) -> {
             String htmlTarget = matchResult.group(1);
             int lastIndex = htmlTarget.lastIndexOf('.');
             if (lastIndex < 0) {
-                return "<ri:page ri:content-title=\"" + htmlTarget + "\"";
+                return "<ac:link ac:anchor=\"" + htmlTarget + "\" />";
             }
 
             Path referencedPagePath = pagePath.getParent().resolve(Paths.get(htmlTarget.substring(0, htmlTarget.lastIndexOf('.')) + ".adoc"));
