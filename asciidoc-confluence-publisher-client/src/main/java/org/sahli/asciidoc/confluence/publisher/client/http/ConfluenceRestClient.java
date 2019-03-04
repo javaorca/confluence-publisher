@@ -76,8 +76,8 @@ public class ConfluenceRestClient implements ConfluenceClient {
     }
 
     @Override
-    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content) {
-        HttpPost addPageUnderSpaceRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content);
+    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, String versionMessage) {
+        HttpPost addPageUnderSpaceRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
 
         return sendRequestAndFailIfNot20x(addPageUnderSpaceRequest, (response) -> {
             String contentId = extractIdFromJsonNode(parseJsonResponse(response));
@@ -87,8 +87,8 @@ public class ConfluenceRestClient implements ConfluenceClient {
     }
 
     @Override
-    public void updatePage(String contentId, String ancestorId, String title, String content, int newVersion, String message) {
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, newVersion, message);
+    public void updatePage(String contentId, String ancestorId, String title, String content, int newVersion, String versionMessage) {
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, newVersion, versionMessage);
         sendRequestAndFailIfNot20x(updatePageRequest);
     }
 
@@ -227,22 +227,12 @@ public class ConfluenceRestClient implements ConfluenceClient {
     }
 
     <T> T sendRequest(HttpRequestBase httpRequest, Function<HttpResponse, T> responseHandler) {
-        CloseableHttpResponse response = null;
+        httpRequest.addHeader(AUTHORIZATION, basicAuthorizationHeaderValue(this.username, this.password));
 
-        try {
-            httpRequest.addHeader(AUTHORIZATION, basicAuthorizationHeaderValue(this.username, this.password));
-            response = this.httpClient.execute(httpRequest);
-
+        try (CloseableHttpResponse response = this.httpClient.execute(httpRequest)) {
             return responseHandler.apply(response);
         } catch (IOException e) {
             throw new RuntimeException("Request could not be sent" + httpRequest, e);
-        } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException ignored) {
-            }
         }
     }
 

@@ -112,7 +112,7 @@ The Confluence Publisher is configured with the help of a Maven plugin. A typica
 | The id of the ancestor page under which the pages are appended.
 
   Be aware that publishing will remove all pages under the configured ancestor id that are not part of the published
-  documentation.
+  documentation ("orphaned pages").
 | mandatory
 
 | username
@@ -122,6 +122,19 @@ The Confluence Publisher is configured with the help of a Maven plugin. A typica
 | password
 | The password of the user to use for publishing.
 | mandatory
+
+| publishingStrategy
+a| The strategy to use when publishing to confluence. Possible values:
+
+* `APPEND_TO_ANCESTOR`: append the published pages to the ancestor and remove all orphaned pages
+* `REPLACE_ANCESTOR`: replace the title and the content of the ancestor with those of the one single root page and
+remove all orphaned pages (requires the documentation source structure to contain exactly one single root page)
+
+| optional (defaults to `APPEND_TO_ANCESTOR`)
+
+| versionMessage
+| The message that will be published with the changes into `Page History` comment.
+| optional (defaults to empty)
 
 | pageTitlePrefix
 | The prefix to be prepended to every page title.
@@ -136,6 +149,10 @@ The Confluence Publisher is configured with the help of a Maven plugin. A typica
   Note: in order to preserve leading or trailing spaces in the page title suffix, the attribute `xml:space="preserve"`
   has to be added to the `pageTitleSuffix` element.
 | optional (defaults to empty)
+
+| skip
+| Defines whether the plugin execution should be skipped.
+| optional (defaults to false, only supported for Maven plugin)
 |===
 
 As usually with Maven, configuration properties can either be defined directly in the Confluence Publisher maven plugin
@@ -195,7 +212,7 @@ the following configuration in your `pom.xml` in order to use the latest snapsho
     <plugin>
       <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
       <artifactId>asciidoc-confluence-publisher-maven-plugin</artifactId>
-      <version>0.0.3</version>
+      <version>0.0.4</version>
       <!-- ... -->
     </plugin>
   </plugins>
@@ -230,6 +247,8 @@ docker run --rm -e ROOT_CONFLUENCE_URL=http://confluence-host \
    -e ANCESTOR_ID=012345 \
    -e PAGE_TITLE_PREFIX="Draft - " \
    -e PAGE_TITLE_SUFFIX=" (V 1.0)" \
+   -e PUBLISHING_STRATEGY=REPLACE_ANCESTOR \
+   -e VERSION_MESSAGE=V 1.0 \
    -v /absolute/path/to/asciidoc-root-folder:/var/asciidoc-root-folder \
    confluencepublisher/confluence-publisher:0.0.0-SNAPSHOT
 ----

@@ -35,7 +35,6 @@ public class Version {
         this.number = number;
     }
 
-    @RuntimeUse
     public String getMessage() {
         return message;
     }

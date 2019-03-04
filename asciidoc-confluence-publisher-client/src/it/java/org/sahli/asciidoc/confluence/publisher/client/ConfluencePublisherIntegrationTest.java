@@ -24,14 +24,20 @@ import org.sahli.asciidoc.confluence.publisher.client.metadata.ConfluencePageMet
 import org.sahli.asciidoc.confluence.publisher.client.metadata.ConfluencePublisherMetadata;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.UUID.randomUUID;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
+import static org.sahli.asciidoc.confluence.publisher.client.PublishingStrategy.APPEND_TO_ANCESTOR;
+import static org.sahli.asciidoc.confluence.publisher.client.PublishingStrategy.REPLACE_ANCESTOR;
 
 /**
  * @author Alain Sahli
@@ -42,13 +48,17 @@ public class ConfluencePublisherIntegrationTest {
     private static final String ANCESTOR_ID = "327706";
 
     @Test
-    public void publish_singlePage_pageIsCreatedInConfluence() {
+    public void publish_singlePageAndAppendToAncestorPublishingStrategy_pageIsCreatedAndAttachmentsAddedInConfluence() {
         // arrange
         String title = uniqueTitle("Single Page");
-        ConfluencePageMetadata confluencePageMetadata = confluencePageMetadata(title, absolutePathTo("single-page/single-page.xhtml"));
-        ConfluencePublisherMetadata confluencePublisherMetadata = confluencePublisherMetadata(confluencePageMetadata);
 
-        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata);
+        Map<String, String> attachments = new HashMap<>();
+        attachments.put("attachmentOne.txt", absolutePathTo("attachments/attachmentOne.txt"));
+        attachments.put("attachmentTwo.txt", absolutePathTo("attachments/attachmentTwo.txt"));
+
+        ConfluencePageMetadata confluencePageMetadata = confluencePageMetadata(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
+        ConfluencePublisherMetadata confluencePublisherMetadata = confluencePublisherMetadata(confluencePageMetadata);
+        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata, APPEND_TO_ANCESTOR);
 
         // act
         confluencePublisher.publish();
@@ -57,6 +67,41 @@ public class ConfluencePublisherIntegrationTest {
         givenAuthenticatedAsPublisher()
                 .when().get(childPages())
                 .then().body("results.title", hasItem(title));
+
+        givenAuthenticatedAsPublisher()
+                .when().get(attachmentsOf(pageIdBy(title)))
+                .then()
+                .body("results", hasSize(2))
+                .body("results[0].title", is("attachmentOne.txt"))
+                .body("results[1].title", is("attachmentTwo.txt"));
+    }
+
+    @Test
+    public void publish_singlePageAndReplaceAncestorPublishingStrategy_pageIsUpdatedAndAttachmentsAddedInConfluence() {
+        // arrange
+        String title = uniqueTitle("Single Page");
+        Map<String, String> attachments = new HashMap<>();
+        attachments.put("attachmentOne.txt", absolutePathTo("attachments/attachmentOne.txt"));
+        attachments.put("attachmentTwo.txt", absolutePathTo("attachments/attachmentTwo.txt"));
+
+        ConfluencePageMetadata confluencePageMetadata = confluencePageMetadata(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
+        ConfluencePublisherMetadata confluencePublisherMetadata = confluencePublisherMetadata(confluencePageMetadata);
+        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata, REPLACE_ANCESTOR);
+
+        // act
+        confluencePublisher.publish();
+
+        // assert
+        givenAuthenticatedAsPublisher()
+                .when().get(rootPage())
+                .then().body("title", is(title));
+
+        givenAuthenticatedAsPublisher()
+                .when().get(rootPageAttachments())
+                .then()
+                .body("results", hasSize(2))
+                .body("results[0].title", is("attachmentOne.txt"))
+                .body("results[1].title", is("attachmentTwo.txt"));
     }
 
     @Test
@@ -65,7 +110,7 @@ public class ConfluencePublisherIntegrationTest {
         String title = uniqueTitle("Single Page");
         ConfluencePageMetadata confluencePageMetadata = confluencePageMetadata(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluencePublisherMetadata confluencePublisherMetadata = confluencePublisherMetadata(confluencePageMetadata);
-        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata);
+        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata, APPEND_TO_ANCESTOR);
 
         // act
         confluencePublisher.publish();
@@ -81,9 +126,10 @@ public class ConfluencePublisherIntegrationTest {
     public void publish_validPageContentThenInvalidPageContentThenValidContentAgain_validPageContentWithNonEmptyContentHashIsInConfluenceAtTheEndOfPublication() {
         // arrange
         String title = uniqueTitle("Invalid Markup Test Page");
+
         ConfluencePageMetadata confluencePageMetadata = confluencePageMetadata(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluencePublisherMetadata confluencePublisherMetadata = confluencePublisherMetadata(confluencePageMetadata);
-        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata);
+        ConfluencePublisher confluencePublisher = confluencePublisher(confluencePublisherMetadata, APPEND_TO_ANCESTOR);
 
         // act
         confluencePublisher.publish();
@@ -109,9 +155,14 @@ public class ConfluencePublisherIntegrationTest {
     }
 
     private static ConfluencePageMetadata confluencePageMetadata(String title, String contentFilePath) {
+        return confluencePageMetadata(title, contentFilePath, emptyMap());
+    }
+
+    private static ConfluencePageMetadata confluencePageMetadata(String title, String contentFilePath, Map<String, String> attachments) {
         ConfluencePageMetadata confluencePageMetadata = new ConfluencePageMetadata();
         confluencePageMetadata.setTitle(title);
         confluencePageMetadata.setContentFilePath(contentFilePath);
+        confluencePageMetadata.setAttachments(attachments);
 
         return confluencePageMetadata;
     }
@@ -133,6 +184,18 @@ public class ConfluencePublisherIntegrationTest {
         return "http://localhost:8090/rest/api/content/" + ANCESTOR_ID + "/child/page";
     }
 
+    private static String attachmentsOf(String contentId) {
+        return "http://localhost:8090/rest/api/content/" + contentId + "/child/attachment";
+    }
+
+    private static String rootPage() {
+        return "http://localhost:8090/rest/api/content/" + ANCESTOR_ID;
+    }
+
+    private static String rootPageAttachments() {
+        return attachmentsOf(ANCESTOR_ID);
+    }
+
     private static String pageVersionOf(String contentId) {
         return "http://localhost:8090/rest/api/content/" + contentId + "?expand=version";
     }
@@ -147,8 +210,8 @@ public class ConfluencePublisherIntegrationTest {
                 .then().extract().jsonPath().getString("results.find({it.title == '" + title + "'}).id");
     }
 
-    private static ConfluencePublisher confluencePublisher(ConfluencePublisherMetadata confluencePublisherMetadata) {
-        return new ConfluencePublisher(confluencePublisherMetadata, confluenceRestClient());
+    private static ConfluencePublisher confluencePublisher(ConfluencePublisherMetadata confluencePublisherMetadata, PublishingStrategy publishingStrategy) {
+        return new ConfluencePublisher(confluencePublisherMetadata, publishingStrategy, confluenceRestClient());
     }
 
     private static RequestSpecification givenAuthenticatedAsPublisher() {

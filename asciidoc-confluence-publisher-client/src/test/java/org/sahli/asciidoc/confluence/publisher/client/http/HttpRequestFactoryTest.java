@@ -77,9 +77,10 @@ public class HttpRequestFactoryTest {
         String ancestorId = "1234";
         String title = "title";
         String content = "content";
+        String versionMessage = "version message";
 
         // act
-        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content);
+        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
 
         // assert
         assertThat(addPageUnderAncestorRequest.getMethod(), is("POST"));
@@ -92,13 +93,35 @@ public class HttpRequestFactoryTest {
     }
 
     @Test
+    public void addPageUnderAncestorRequest_withoutVersionMessage_returnsValidHttpPost() throws Exception {
+        // arrange
+        String spaceKey = "~personalSpace";
+        String ancestorId = "1234";
+        String title = "title";
+        String content = "content";
+        String versionMessage = null;
+
+        // act
+        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
+
+        // assert
+        assertThat(addPageUnderAncestorRequest.getMethod(), is("POST"));
+        assertThat(addPageUnderAncestorRequest.getURI().toString(), is(CONFLUENCE_REST_API_ENDPOINT + "/content"));
+        assertThat(addPageUnderAncestorRequest.getFirstHeader("Content-Type").getValue(), is(APPLICATION_JSON_UTF8));
+
+        String jsonPayload = inputStreamAsString(addPageUnderAncestorRequest.getEntity().getContent(), UTF_8);
+        String expectedJsonPayload = fileContent(Paths.get(CLASS_LOCATION, "add-page-request-without-version-message.json").toString(), UTF_8);
+        assertThat(jsonPayload, isSameJsonAs(expectedJsonPayload));
+    }
+
+    @Test
     public void addPageUnderAncestorRequest_withBlankTitle_throwsIllegalArgumentException() {
         // assert
         this.expectedException.expect(IllegalArgumentException.class);
         this.expectedException.expectMessage("title must be set");
 
         // arrange + act
-        this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content");
+        this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content", "version message");
     }
 
     @Test
@@ -108,21 +131,21 @@ public class HttpRequestFactoryTest {
         this.expectedException.expectMessage("ancestorId must be set");
 
         // arrange + act
-        this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content");
+        this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content", "version message");
     }
 
     @Test
-    public void updatePageRequest_withValidParameters_returnsValidHttpPutRequest() throws Exception {
+    public void updatePageRequest_withValidParametersWithAncestorId_returnsValidHttpPutRequest() throws Exception {
         // arrange
         String contentId = "1234";
         String ancestorId = "1";
         String title = "title";
         String content = "content";
         Integer version = 2;
-        String message = "test message";
+        String versionMessage = "version message";
 
         // act
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, version, message);
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, version, versionMessage);
 
         // assert
         assertThat(updatePageRequest.getMethod(), is("PUT"));
@@ -130,7 +153,30 @@ public class HttpRequestFactoryTest {
         assertThat(updatePageRequest.getFirstHeader("Content-Type").getValue(), is(APPLICATION_JSON_UTF8));
 
         String jsonPayload = inputStreamAsString(updatePageRequest.getEntity().getContent(), UTF_8);
-        String expectedJsonPayload = fileContent(Paths.get(CLASS_LOCATION, "update-page-request.json").toString(), UTF_8);
+        String expectedJsonPayload = fileContent(Paths.get(CLASS_LOCATION, "update-page-request-with-ancestor-id.json").toString(), UTF_8);
+        assertThat(jsonPayload, isSameJsonAs(expectedJsonPayload));
+    }
+
+    @Test
+    public void updatePageRequest_withValidParametersWithoutAncestorId_returnsValidHttpPutRequest() throws Exception {
+        // arrange
+        String contentId = "1234";
+        String ancestorId = null;
+        String title = "title";
+        String content = "content";
+        Integer version = 2;
+        String versionMessage = null;
+
+        // act
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, version, versionMessage);
+
+        // assert
+        assertThat(updatePageRequest.getMethod(), is("PUT"));
+        assertThat(updatePageRequest.getURI().toString(), is(CONFLUENCE_REST_API_ENDPOINT + "/content/" + contentId));
+        assertThat(updatePageRequest.getFirstHeader("Content-Type").getValue(), is(APPLICATION_JSON_UTF8));
+
+        String jsonPayload = inputStreamAsString(updatePageRequest.getEntity().getContent(), UTF_8);
+        String expectedJsonPayload = fileContent(Paths.get(CLASS_LOCATION, "update-page-request-without-ancestor-id.json").toString(), UTF_8);
         assertThat(jsonPayload, isSameJsonAs(expectedJsonPayload));
     }
 
@@ -142,16 +188,6 @@ public class HttpRequestFactoryTest {
 
         // arrange + act
         this.httpRequestFactory.updatePageRequest("", "1", "title", "content", 2, "test message");
-    }
-
-    @Test
-    public void updatePageRequest_withEmptyAncestorId_throwsIllegalArgumentException() {
-        // assert
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("ancestorId must be set");
-
-        // arrange + act
-        this.httpRequestFactory.updatePageRequest("1234", "", "title", "content", 2, "test message");
     }
 
     @Test

@@ -22,7 +22,7 @@
 
     <groupId>org.sahli.asciidoc.confluence.publisher</groupId>
     <artifactId>asciidoc-confluence-publisher</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
 
     <name>Asciidoc Confluence Publisher</name>
@@ -291,7 +291,7 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.1.0</version>
                 <configuration>
-                    <repoToken>DKzylPGWTPWC4iQrPiDhqmsZwcxuI2UrV</repoToken>
+                    <repoToken>dubhyzNPv8kQb8DQrTM5Iiv7Mgyq4azFX</repoToken>
                 </configuration>
             </plugin>
             <plugin>
@@ -356,8 +356,8 @@
                         <version>1.6</version>
                         <configuration>
                             <executable>gpg</executable>
-                            <keyname>${env.GPG_KEYNAME}</keyname>
-                            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+                            <keyname>${env.CODE_SIGNING_ID}</keyname>
+                            <passphrase>${env.CODE_SIGNING_PASSWORD}</passphrase>
                         </configuration>
                     </plugin>
                 </plugins>

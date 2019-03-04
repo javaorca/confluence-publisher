@@ -10,8 +10,7 @@
     }
   ],
   "version": {
-    "number": 1,
-    "message": "version message"
+    "number": 1
   },
   "body": {
     "storage": {
